@@ -50,8 +50,8 @@ artifacts/
 *.h5
 *.pkl
 
-## Data files (uncomment if you don't want to commit data)
-# *.csv
+## Data files (large data files should not be committed)
+*.csv
 # *.json
 # *.xml
 
