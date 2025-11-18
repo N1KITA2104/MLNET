@@ -32,8 +32,12 @@ class Program
             ShowMenu();
         }
 
-        Console.WriteLine("\nPress any key to exit...");
-        Console.ReadKey();
+        // Skip ReadKey in non-interactive environments (CI/CD)
+        if (Environment.UserInteractive && Console.IsInputRedirected == false)
+        {
+            Console.WriteLine("\nPress any key to exit...");
+            Console.ReadKey();
+        }
     }
 
     static void ShowMenu()
