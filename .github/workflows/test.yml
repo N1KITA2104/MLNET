@@ -110,10 +110,61 @@ jobs:
       run: dotnet run predict
       timeout-minutes: 5
 
+  test-lab3:
+    name: Test Lab 3 - Anomaly Detection
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+        
+    - name: Restore dependencies for Lab 3
+      working-directory: ./lab3
+      run: dotnet restore
+      
+    - name: Build Lab 3
+      working-directory: ./lab3
+      run: dotnet build --no-restore
+      
+    - name: Verify CPU Data CSV exists
+      working-directory: ./lab3
+      run: |
+        if [ ! -f "cpu4.csv" ]; then
+          echo "Error: cpu4.csv not found in repository"
+          echo "Please ensure the CSV file is committed to the repository"
+          exit 1
+        fi
+        echo "Using cpu4.csv from repository"
+        wc -l cpu4.csv
+        
+    - name: Run Lab 3 Training
+      working-directory: ./lab3
+      run: dotnet run train
+      timeout-minutes: 10
+      
+    - name: Verify Model File Created
+      working-directory: ./lab3
+      run: |
+        if [ ! -f "anomaly_detection_model.zip" ]; then
+          echo "Error: Model file not created"
+          exit 1
+        fi
+        echo "Model file created successfully"
+        
+    - name: Run Lab 3 Prediction
+      working-directory: ./lab3
+      run: dotnet run predict
+      timeout-minutes: 5
+
   test-all:
     name: Test All Labs
     runs-on: ubuntu-latest
-    needs: [test-lab1, test-lab2]
+    needs: [test-lab1, test-lab2, test-lab3]
     
     steps:
     - name: All tests passed
