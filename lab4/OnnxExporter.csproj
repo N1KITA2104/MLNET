@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ML" Version="5.0.0" />
+    <PackageReference Include="Microsoft.ML.FastTree" Version="5.0.0" />
+    <PackageReference Include="Microsoft.ML.LightGbm" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="StockPredictionWebApi/**" />
+    <Content Remove="StockPredictionWebApi/**" />
+    <EmbeddedResource Remove="StockPredictionWebApi/**" />
+    <None Remove="StockPredictionWebApi/**" />
+  </ItemGroup>
+
+</Project>
+
