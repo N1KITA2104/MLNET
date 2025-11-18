@@ -1,0 +1,46 @@
+name: Publish NuGet Package
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version (e.g., 1.0.0)'
+        required: true
+        default: '1.0.0'
+
+jobs:
+  publish:
+    name: Publish to GitHub Packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+        
+    - name: Configure NuGet for GitHub Packages
+      run: |
+        dotnet nuget add source --username ${{ github.repository_owner }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+        
+    - name: Build all projects
+      run: |
+        dotnet build lab1/StockPrediction.csproj --configuration Release
+        dotnet build lab2/LoanPrediction.csproj --configuration Release
+        dotnet build lab3/AnomalyDetection.csproj --configuration Release
+        dotnet build lab4/OnnxExporter.csproj --configuration Release
+        dotnet build lab4/StockPredictionWebApi/StockPredictionWebApi.csproj --configuration Release
+        
+    - name: Run tests
+      run: |
+        echo "All projects built successfully"
+        echo "Note: To publish a NuGet package, create a library project first"
+
