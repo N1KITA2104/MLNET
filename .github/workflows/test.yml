@@ -27,7 +27,7 @@ jobs:
       
     - name: Build Lab 1
       working-directory: ./lab1
-      run: dotnet build --no-restore -c Release
+      run: dotnet build --no-restore
       
     - name: Verify Tesla Stock Data CSV exists
       working-directory: ./lab1
@@ -42,7 +42,7 @@ jobs:
         
     - name: Run Lab 1 Training
       working-directory: ./lab1
-      run: dotnet run --no-build train
+      run: dotnet run train
       timeout-minutes: 10
       
     - name: Verify Model File Created
@@ -56,7 +56,7 @@ jobs:
         
     - name: Run Lab 1 Prediction
       working-directory: ./lab1
-      run: dotnet run --no-build predict
+      run: dotnet run predict
       timeout-minutes: 5
 
   test-lab2:
@@ -78,7 +78,7 @@ jobs:
       
     - name: Build Lab 2
       working-directory: ./lab2
-      run: dotnet build --no-restore -c Release
+      run: dotnet build --no-restore
       
     - name: Verify Loan Data CSV exists
       working-directory: ./lab2
@@ -93,7 +93,7 @@ jobs:
         
     - name: Run Lab 2 Training
       working-directory: ./lab2
-      run: dotnet run --no-build train
+      run: dotnet run train
       timeout-minutes: 10
       
     - name: Verify Model File Created
@@ -107,7 +107,7 @@ jobs:
         
     - name: Run Lab 2 Prediction
       working-directory: ./lab2
-      run: dotnet run --no-build predict
+      run: dotnet run predict
       timeout-minutes: 5
 
   test-all:
