@@ -45,30 +45,45 @@ public class OnnxModelExporter
 
         Console.WriteLine("Exporting model to ONNX format...");
         
-        var inputData = LoadProcessedStockData(mlContext, DataPath);
+        var sampleData = LoadProcessedStockData(mlContext, DataPath);
+        var sampleDataView = mlContext.Data.TakeRows(sampleData, 1);
         
         try
         {
             using (var fileStream = new FileStream(OnnxModelPath, FileMode.Create))
             {
-                Console.WriteLine("Attempting ONNX export...");
-                Console.WriteLine("Note: ONNX export support varies by trainer.");
-                Console.WriteLine("FastTree trainer should support ONNX export in ML.NET 5.0.");
-                Console.WriteLine("ONNX export functionality requires proper ML.NET ONNX support.");
-                Console.WriteLine("For production use, ensure you have the correct packages installed.");
-                Console.WriteLine($"Model saved as ZIP: {ModelPath}");
-                Console.WriteLine("To use ONNX, you may need to export from a different framework or use ONNX conversion tools.");
+                Console.WriteLine("Converting model to ONNX format...");
+                mlContext.Model.ConvertToOnnx(model, sampleDataView, fileStream);
+                Console.WriteLine($"ONNX model saved successfully: {OnnxModelPath}");
+            }
+        }
+        catch (NotSupportedException ex)
+        {
+            Console.WriteLine($"ONNX export not supported: {ex.Message}");
+            Console.WriteLine("\nNote: The trainer or pipeline may not support ONNX export.");
+            Console.WriteLine($"Model saved as ZIP: {ModelPath}");
+            Console.WriteLine("The web application can use the ZIP model as fallback.");
+            
+            if (File.Exists(OnnxModelPath))
+            {
+                File.Delete(OnnxModelPath);
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
-            Console.WriteLine("\nNote: ONNX export may require:");
-            Console.WriteLine("1. Microsoft.ML.OnnxConverter package (if available)");
-            Console.WriteLine("2. Trainer that supports ONNX export");
-            Console.WriteLine("3. Proper model pipeline structure");
+            Console.WriteLine($"Error exporting to ONNX: {ex.Message}");
+            Console.WriteLine($"Error type: {ex.GetType().Name}");
+            Console.WriteLine("\nNote: ONNX export requires:");
+            Console.WriteLine("- Microsoft.ML.OnnxConverter package (should be installed)");
+            Console.WriteLine("- Trainer that supports ONNX export (FastTree supports ONNX)");
+            Console.WriteLine("- Proper model pipeline structure");
             Console.WriteLine($"\nModel saved as ZIP: {ModelPath}");
-            Console.WriteLine("You can use the ZIP model in the web application or convert it separately.");
+            Console.WriteLine("The web application supports both ONNX and ZIP model formats.");
+            
+            if (File.Exists(OnnxModelPath))
+            {
+                File.Delete(OnnxModelPath);
+            }
         }
 
         Console.WriteLine("\n=== Export Complete ===");
