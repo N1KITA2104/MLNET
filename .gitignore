@@ -51,7 +51,7 @@ artifacts/
 *.pkl
 
 ## Data files (large data files should not be committed)
-*.csv
+# *.csv - commented out to allow test CSV files in labs
 # *.json
 # *.xml
 

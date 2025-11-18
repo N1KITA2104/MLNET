@@ -1,0 +1,121 @@
+name: ML.NET Labs E2E Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  test-lab1:
+    name: Test Lab 1 - Stock Price Prediction (Regression)
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+        
+    - name: Restore dependencies for Lab 1
+      working-directory: ./lab1
+      run: dotnet restore
+      
+    - name: Build Lab 1
+      working-directory: ./lab1
+      run: dotnet build --no-restore -c Release
+      
+    - name: Verify Tesla Stock Data CSV exists
+      working-directory: ./lab1
+      run: |
+        if [ ! -f "tesla_stock_data.csv" ]; then
+          echo "Error: tesla_stock_data.csv not found in repository"
+          echo "Please ensure the CSV file is committed to the repository"
+          exit 1
+        fi
+        echo "Using tesla_stock_data.csv from repository"
+        wc -l tesla_stock_data.csv
+        
+    - name: Run Lab 1 Training
+      working-directory: ./lab1
+      run: dotnet run --no-build train
+      timeout-minutes: 10
+      
+    - name: Verify Model File Created
+      working-directory: ./lab1
+      run: |
+        if [ ! -f "stock_prediction_model.zip" ]; then
+          echo "Error: Model file not created"
+          exit 1
+        fi
+        echo "Model file created successfully"
+        
+    - name: Run Lab 1 Prediction
+      working-directory: ./lab1
+      run: dotnet run --no-build predict
+      timeout-minutes: 5
+
+  test-lab2:
+    name: Test Lab 2 - Loan Approval Prediction (Classification)
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+        
+    - name: Restore dependencies for Lab 2
+      working-directory: ./lab2
+      run: dotnet restore
+      
+    - name: Build Lab 2
+      working-directory: ./lab2
+      run: dotnet build --no-restore -c Release
+      
+    - name: Verify Loan Data CSV exists
+      working-directory: ./lab2
+      run: |
+        if [ ! -f "loan_data_set.csv" ]; then
+          echo "Error: loan_data_set.csv not found in repository"
+          echo "Please ensure the CSV file is committed to the repository"
+          exit 1
+        fi
+        echo "Using loan_data_set.csv from repository"
+        wc -l loan_data_set.csv
+        
+    - name: Run Lab 2 Training
+      working-directory: ./lab2
+      run: dotnet run --no-build train
+      timeout-minutes: 10
+      
+    - name: Verify Model File Created
+      working-directory: ./lab2
+      run: |
+        if [ ! -f "loan_prediction_model.zip" ]; then
+          echo "Error: Model file not created"
+          exit 1
+        fi
+        echo "Model file created successfully"
+        
+    - name: Run Lab 2 Prediction
+      working-directory: ./lab2
+      run: dotnet run --no-build predict
+      timeout-minutes: 5
+
+  test-all:
+    name: Test All Labs
+    runs-on: ubuntu-latest
+    needs: [test-lab1, test-lab2]
+    
+    steps:
+    - name: All tests passed
+      run: echo "✅ All laboratory works passed successfully!"
+

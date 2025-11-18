@@ -67,7 +67,7 @@ artifacts/
 *.pkl
 
 ## Data files (uncomment if you don't want to commit data)
-# *.csv
+# *.csv - commented out to allow test CSV files
 # *.json
 # *.xml
 
